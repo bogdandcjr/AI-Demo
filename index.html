@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Projects — David</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --surface: #FFFFFF;
+      --ink: #1A1916;
+      --ink-light: #6B6860;
+      --accent: #2E6B4F;
+      --accent-pale: #EAF2EC;
+      --border: #E5E2DA;
+      --serif: 'DM Serif Display', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(247,245,240,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-color: var(--border); }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink-light);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 48px 80px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .hero-inner { max-width: 680px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 28px;
+      opacity: 0; animation: fadeUp 0.7s 0.1s ease forwards;
+    }
+    .eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 24px;
+      opacity: 0; animation: fadeUp 0.7s 0.25s ease forwards;
+    }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero p {
+      font-size: 1.15rem; color: var(--ink-light);
+      max-width: 500px; line-height: 1.7; margin-bottom: 40px;
+      font-weight: 300;
+      opacity: 0; animation: fadeUp 0.7s 0.4s ease forwards;
+    }
+    .hero-cta {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.7s 0.55s ease forwards;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 40px;
+      font-size: 0.9rem; font-weight: 500;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: all 0.2s ease;
+    }
+    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-primary:hover { background: #333; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--border); }
+    .btn-outline:hover { border-color: var(--ink); transform: translateY(-1px); }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink-light);
+      margin-bottom: 48px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .section-heading {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      letter-spacing: -0.03em; line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    /* ── PROJECTS GRID ── */
+    #projects { border-top: 1px solid var(--border); }
+
+    .projects-intro { max-width: 520px; margin-bottom: 56px; }
+    .projects-intro p { color: var(--ink-light); font-weight: 300; font-size: 1.05rem; }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      display: flex; flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer; text-decoration: none; color: inherit;
+      position: relative; overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.08);
+    }
+
+    .card-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent);
+      background: var(--accent-pale);
+      padding: 4px 10px; border-radius: 20px;
+      margin-bottom: 20px; width: fit-content;
+    }
+    .card-emoji { font-size: 1rem; }
+
+    .card-title {
+      font-family: var(--serif);
+      font-size: 1.45rem; letter-spacing: -0.02em;
+      margin-bottom: 10px; line-height: 1.2;
+    }
+    .card-desc {
+      font-size: 0.9rem; color: var(--ink-light);
+      line-height: 1.65; flex: 1; font-weight: 300;
+    }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 28px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .card-tech {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .tech-pill {
+      font-size: 0.7rem; font-weight: 500; color: var(--ink-light);
+      background: var(--bg); padding: 3px 8px; border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .card-arrow {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ink-light); font-size: 0.85rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .project-card:hover .card-arrow {
+      background: var(--ink); border-color: var(--ink); color: #fff;
+    }
+
+    .add-card {
+      border: 2px dashed var(--border);
+      background: transparent;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; min-height: 220px;
+      border-radius: var(--radius);
+      color: var(--ink-light);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .add-card:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-pale); }
+    .add-icon { font-size: 1.8rem; }
+    .add-text { font-size: 0.9rem; font-weight: 500; }
+
+    /* ── DEMOS ── */
+    #demos { border-top: 1px solid var(--border); }
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px; align-items: start;
+    }
+    .demo-sidebar { position: sticky; top: 100px; }
+    .demo-sidebar p {
+      color: var(--ink-light); font-weight: 300; font-size: 1.05rem;
+      margin-top: 16px; margin-bottom: 32px;
+    }
+    .demo-list { display: flex; flex-direction: column; gap: 8px; }
+    .demo-btn {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 18px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface);
+      cursor: pointer; text-align: left; width: 100%;
+      transition: all 0.2s; font-family: var(--sans);
+    }
+    .demo-btn:hover, .demo-btn.active {
+      border-color: var(--accent); background: var(--accent-pale);
+    }
+    .demo-btn-emoji { font-size: 1.2rem; width: 24px; text-align: center; }
+    .demo-btn-text { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+    .demo-btn-sub { font-size: 0.78rem; color: var(--ink-light); font-weight: 300; margin-top: 2px; }
+
+    .demo-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-height: 480px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .demo-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .demo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+    .demo-dot.green { background: #5CB85C; }
+    .demo-title { font-size: 0.85rem; font-weight: 500; color: var(--ink-light); margin-left: 4px; }
+    .demo-body { flex: 1; padding: 28px; display: flex; flex-direction: column; }
+
+    /* Finance Demo */
+    .finance-demo { gap: 20px; }
+    .demo-intro { font-size: 0.9rem; color: var(--ink-light); margin-bottom: 8px; }
+    .finance-row { display: flex; gap: 12px; align-items: center; }
+    .finance-label { font-size: 0.85rem; width: 120px; color: var(--ink); font-weight: 500; }
+    .finance-input {
+      flex: 1; padding: 9px 14px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 0.9rem; font-family: var(--sans);
+      background: var(--bg); color: var(--ink);
+      transition: border-color 0.2s;
+    }
+    .finance-input:focus { outline: none; border-color: var(--accent); }
+    .finance-result {
+      background: var(--accent-pale);
+      border: 1px solid #C5DDD0;
+      border-radius: 10px; padding: 20px;
+      margin-top: 8px;
+    }
+    .result-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 500; }
+    .result-value { font-family: var(--serif); font-size: 2.2rem; color: var(--ink); margin-top: 4px; }
+    .result-note { font-size: 0.82rem; color: var(--ink-light); margin-top: 6px; }
+    .demo-run-btn {
+      margin-top: auto; padding: 12px 24px;
+      background: var(--ink); color: #fff;
+      border: none; border-radius: 8px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 500; font-family: var(--sans);
+      transition: background 0.2s; align-self: flex-start;
+    }
+    .demo-run-btn:hover { background: #333; }
+
+    /* Ride Tracker Demo */
+    .rides-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: auto; }
+    .ride-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 16px; background: var(--bg);
+      border-radius: 8px; border: 1px solid var(--border);
+    }
+    .ride-icon { font-size: 1.1rem; }
+    .ride-info { flex: 1; }
+    .ride-name { font-size: 0.9rem; font-weight: 500; }
+    .ride-meta { font-size: 0.78rem; color: var(--ink-light); margin-top: 2px; }
+    .ride-dist { font-family: var(--serif); font-size: 1.2rem; color: var(--accent); }
+    .ride-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px; margin-top: 16px;
+    }
+    .stat-box {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px; text-align: center;
+    }
+    .stat-num { font-family: var(--serif); font-size: 1.5rem; color: var(--ink); }
+    .stat-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-top: 3px; }
+
+    /* Trip Demo */
+    .trip-grid { display: flex; flex-direction: column; gap: 10px; }
+    .trip-row {
+      display: flex; gap: 10px; align-items: center;
+    }
+    .trip-cat { font-size: 0.85rem; font-weight: 500; width: 90px; }
+    .trip-bar-bg { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .trip-bar { height: 100%; border-radius: 4px; background: var(--accent); }
+    .trip-amt { font-size: 0.85rem; color: var(--ink-light); width: 56px; text-align: right; }
+    .trip-total {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px; background: var(--accent-pale);
+      border-radius: 8px; margin-top: 8px;
+    }
+    .trip-total-lbl { font-size: 0.85rem; font-weight: 500; }
+    .trip-total-num { font-family: var(--serif); font-size: 1.4rem; color: var(--accent); }
+
+    /* ── ABOUT ── */
+    #about { border-top: 1px solid var(--border); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 2fr; gap: 80px;
+      align-items: start;
+    }
+    .about-avatar {
+      width: 100%; aspect-ratio: 1;
+      background: var(--accent-pale);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+      border: 1px solid #C5DDD0;
+    }
+    .about-content h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      letter-spacing: -0.03em; margin-bottom: 20px;
+    }
+    .about-content p {
+      color: var(--ink-light); font-weight: 300;
+      font-size: 1.05rem; line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .interests {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px;
+    }
+    .interest-tag {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: 30px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 0.85rem; font-weight: 500;
+    }
+    .interest-tag span { font-size: 1rem; }
+
+    .social-links {
+      display: flex; gap: 12px; margin-top: 28px;
+    }
+    .social-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 30px;
+      border: 1.5px solid var(--border);
+      font-size: 0.85rem; font-weight: 500;
+      text-decoration: none; color: var(--ink);
+      transition: all 0.2s;
+    }
+    .social-link:hover { border-color: var(--ink); background: var(--ink); color: #fff; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .footer-name { font-family: var(--serif); font-size: 1.1rem; }
+    .footer-note { font-size: 0.82rem; color: var(--ink-light); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero, section { padding-left: 24px; padding-right: 24px; }
+      .demo-container { grid-template-columns: 1fr; }
+      .demo-sidebar { position: static; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-avatar { max-width: 140px; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+    .tsv-drop {
+      border: 2px dashed var(--border); border-radius: 10px;
+      padding: 22px 16px; text-align: center; cursor: pointer;
+      transition: all 0.2s; background: var(--surface);
+    }
+    .tsv-drop:hover, .tsv-drop.drag-over { border-color: var(--accent); background: var(--accent-pale); }
+    .tsv-drop.loaded { border-color: var(--accent); border-style: solid; background: var(--accent-pale); }
+
+    /* ── YTD Activity Cards ── */
+    .ytd-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px;
+    }
+    .ytd-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .ytd-emoji { font-size: 1.4rem; flex-shrink: 0; }
+    .ytd-title { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+    .ytd-sub { font-size: 0.75rem; color: var(--ink-light); margin-top: 2px; }
+    .ytd-delta { margin-left: auto; font-family: var(--serif); font-size: 1.2rem; flex-shrink: 0; }
+    .ytd-bar-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .ytd-bar-row { display: flex; align-items: center; gap: 8px; }
+    .ytd-bar-lbl { font-size: 0.72rem; color: var(--ink-light); width: 60px; flex-shrink: 0; }
+    .ytd-bar-bg { flex: 1; height: 10px; background: var(--bg); border-radius: 5px; overflow: hidden; border: 1px solid var(--border); }
+    .ytd-bar-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease; width: 0%; }
+    .ytd-bar-val { font-size: 0.78rem; font-weight: 500; color: var(--ink); width: 64px; text-align: right; flex-shrink: 0; }
+    .ytd-sparkline { width: 100%; height: 80px; display: block; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">David</a>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#demos">Demos</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="eyebrow-dot"></span> AI Projects Portfolio</div>
+    <h1>Building tools I<br><em>actually</em> want to use.</h1>
+    <p>Engineer & explorer. I build AI-powered apps at the intersection of personal finance, cycling, and travel.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">View Projects →</a>
+      <a href="#about" class="btn btn-outline">About me</a>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">Work</div>
+  <div class="projects-intro">
+    <h2 class="section-heading">Projects</h2>
+    <p>A collection of AI-assisted tools built for personal use — and shared with anyone who finds them useful.</p>
+  </div>
+
+  <div class="projects-grid">
+
+    <a href="#demos" class="project-card fade-in">
+      <div class="card-tag"><span class="card-emoji">💰</span> Finance</div>
+      <div class="card-title">Savings Goal Estimator</div>
+      <div class="card-desc">Enter your income, expenses, and a target amount. Get a realistic timeline and monthly savings plan powered by AI.</div>
+      <div class="card-footer">
+        <div class="card-tech">
+          <span class="tech-pill">React</span>
+          <span class="tech-pill">Claude API</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="#demos" class="project-card fade-in">
+      <div class="card-tag"><span class="card-emoji">🚴</span> Fitness</div>
+      <div class="card-title">Garmin Activity Tracker</div>
+      <div class="card-desc">Import your Garmin Connect CSV to compare year-to-date miles biked, meters rowed, and strength workouts against the same period last year.</div>
+      <div class="card-footer">
+        <div class="card-tech">
+          <span class="tech-pill">Garmin Connect</span>
+          <span class="tech-pill">Canvas</span>
+          <span class="tech-pill">CSV</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="#demos" class="project-card fade-in">
+      <div class="card-tag"><span class="card-emoji">✈️</span> Travel</div>
+      <div class="card-title">Trip Budget Planner</div>
+      <div class="card-desc">Break down a trip by category — flights, accommodation, food, activities. See at a glance where your money goes.</div>
+      <div class="card-footer">
+        <div class="card-tech">
+          <span class="tech-pill">Vanilla JS</span>
+          <span class="tech-pill">CSS Grid</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="#demos" class="project-card fade-in">
+      <div class="card-tag"><span class="card-emoji">🏡</span> Real Estate</div>
+      <div class="card-title">05482 Home Sale Tracker</div>
+      <div class="card-desc">Upload the free Redfin zip code TSV to see 24 months of median sale prices in Shelburne, VT — with homes-sold volume as a secondary axis.</div>
+      <div class="card-footer">
+        <div class="card-tech">
+          <span class="tech-pill">Redfin Data</span>
+          <span class="tech-pill">Canvas</span>
+          <span class="tech-pill">TSV</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="#demos" class="project-card fade-in">
+      <div class="card-tag"><span class="card-emoji">🟠</span> Fitness</div>
+      <div class="card-title">Strava Activity Tracker</div>
+      <div class="card-desc">Connect your Strava account via API token to see YTD miles ridden, meters rowed, and strength sessions — live, no upload needed.</div>
+      <div class="card-footer">
+        <div class="card-tech">
+          <span class="tech-pill">Strava API</span>
+          <span class="tech-pill">OAuth</span>
+          <span class="tech-pill">Canvas</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <div class="add-card fade-in" onclick="alert('Add your next project here!')">
+      <div class="add-icon">+</div>
+      <div class="add-text">New project coming soon</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- DEMOS -->
+<section id="demos">
+  <div class="section-label">Live</div>
+  <div class="demo-container">
+    <div class="demo-sidebar fade-in">
+      <h2 class="section-heading">Live Demos</h2>
+      <p>Try the tools directly — no sign-up required.</p>
+      <div class="demo-list">
+        <button class="demo-btn active" onclick="showDemo('finance', this)">
+          <span class="demo-btn-emoji">💰</span>
+          <div>
+            <div class="demo-btn-text">Savings Estimator</div>
+            <div class="demo-btn-sub">Finance · Calculator</div>
+          </div>
+        </button>
+        <button class="demo-btn" onclick="showDemo('rides', this)">
+          <span class="demo-btn-emoji">🚴</span>
+          <div>
+            <div class="demo-btn-text">Garmin Tracker</div>
+            <div class="demo-btn-sub">Fitness · YTD vs Last Year</div>
+          </div>
+        </button>
+        <button class="demo-btn" onclick="showDemo('trip', this)">
+          <span class="demo-btn-emoji">✈️</span>
+          <div>
+            <div class="demo-btn-text">Trip Budget</div>
+            <div class="demo-btn-sub">Travel · Planner</div>
+          </div>
+        </button>
+        <button class="demo-btn" onclick="showDemo('housing', this)">
+          <span class="demo-btn-emoji">🏡</span>
+          <div>
+            <div class="demo-btn-text">05482 Home Prices</div>
+            <div class="demo-btn-sub">Real Estate · Redfin</div>
+          </div>
+        </button>
+        <button class="demo-btn" onclick="showDemo('strava', this)">
+          <span class="demo-btn-emoji">🟠</span>
+          <div>
+            <div class="demo-btn-text">Strava Tracker</div>
+            <div class="demo-btn-sub">Fitness · Live API</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="demo-panel fade-in" id="demo-panel">
+      <!-- Finance Demo -->
+      <div id="demo-finance">
+        <div class="demo-header">
+          <div class="demo-dot green"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-title">savings-estimator.js</div>
+        </div>
+        <div class="demo-body finance-demo">
+          <p class="demo-intro">Enter your numbers to estimate when you'll hit your savings goal.</p>
+          <div class="finance-row">
+            <label class="finance-label">Monthly income</label>
+            <input class="finance-input" id="fi-income" type="number" value="6000" placeholder="$">
+          </div>
+          <div class="finance-row">
+            <label class="finance-label">Monthly spend</label>
+            <input class="finance-input" id="fi-spend" type="number" value="4200" placeholder="$">
+          </div>
+          <div class="finance-row">
+            <label class="finance-label">Savings goal</label>
+            <input class="finance-input" id="fi-goal" type="number" value="20000" placeholder="$">
+          </div>
+          <div class="finance-result" id="fi-result">
+            <div class="result-label">Estimated time to goal</div>
+            <div class="result-value" id="fi-months">—</div>
+            <div class="result-note" id="fi-note">Fill in your numbers and click Calculate.</div>
+          </div>
+          <button class="demo-run-btn" onclick="calcSavings()">Calculate →</button>
+        </div>
+      </div>
+
+      <!-- Garmin Activity Tracker Demo -->
+      <div id="demo-rides" style="display:none;">
+        <div class="demo-header">
+          <div class="demo-dot green"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-title">garmin-tracker.js · YTD vs Last Year</div>
+        </div>
+        <div class="demo-body" style="padding:18px; gap:12px; display:flex; flex-direction:column; overflow:auto;">
+
+          <div style="background:var(--accent-pale); border:1px solid #C5DDD0; border-radius:10px; padding:13px 16px; font-size:0.81rem; line-height:1.8; color:var(--ink);">
+            <strong style="display:block; margin-bottom:4px; color:var(--accent); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">How to export from Garmin Connect (free)</strong>
+            1. Go to <a href="https://connect.garmin.com/modern/activities" target="_blank" style="color:var(--accent);font-weight:500;">connect.garmin.com/modern/activities</a><br>
+            2. Scroll to the very bottom of your activities list<br>
+            3. Click <strong>Export CSV</strong><br>
+            4. Upload the CSV below
+          </div>
+
+          <div id="garmin-drop-zone"
+            style="border:2px dashed var(--border); border-radius:10px; padding:20px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--surface);"
+            onclick="document.getElementById('garmin-file-input').click()"
+            ondragover="event.preventDefault(); this.style.borderColor='var(--accent)'; this.style.background='var(--accent-pale)';"
+            ondragleave="this.style.borderColor='var(--border)'; this.style.background='';"
+            ondrop="event.preventDefault(); this.style.borderColor='var(--border)'; this.style.background=''; handleGarminCSV(event.dataTransfer.files[0]);">
+            <div style="font-size:1.4rem; margin-bottom:6px;" id="garmin-drop-icon">📂</div>
+            <div style="font-size:0.88rem; font-weight:500; color:var(--ink);">Click or drag &amp; drop your Garmin activities CSV</div>
+            <div style="font-size:0.75rem; color:var(--ink-light); margin-top:3px;">e.g. <code style="background:var(--bg);padding:1px 6px;border-radius:3px;">Activities.csv</code></div>
+            <input type="file" id="garmin-file-input" accept=".csv" style="display:none" onchange="handleGarminCSV(this.files[0])">
+          </div>
+
+          <div id="garmin-status" style="font-size:0.78rem; color:var(--ink-light); text-align:center; min-height:14px;"></div>
+          <div style="text-align:center;">
+            <button onclick="useGarminSample()"
+              style="padding:6px 18px; background:transparent; color:var(--ink-light); border:1px solid var(--border);
+                     border-radius:20px; font-size:0.78rem; font-family:var(--sans); cursor:pointer;">
+              Or use sample data →
+            </button>
+          </div>
+
+          <div id="garmin-charts" style="display:none; flex-direction:column; gap:16px;">
+            <div id="garmin-date-banner" style="font-size:0.75rem; color:var(--ink-light); text-align:center;"></div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🚴</span>
+                <div><div class="ytd-title">Miles Biked — YTD</div><div class="ytd-sub" id="bike-sub">—</div></div>
+                <div class="ytd-delta" id="bike-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="bike-bar-this" style="background:var(--accent);"></div></div><span class="ytd-bar-val" id="bike-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="bike-bar-last" style="background:#C5DDD0;"></div></div><span class="ytd-bar-val" id="bike-val-last">—</span></div>
+              </div>
+              <canvas id="bike-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🚣</span>
+                <div><div class="ytd-title">Meters Rowed — YTD</div><div class="ytd-sub" id="row-sub">—</div></div>
+                <div class="ytd-delta" id="row-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="row-bar-this" style="background:#4A90C4;"></div></div><span class="ytd-bar-val" id="row-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="row-bar-last" style="background:#C5D8E8;"></div></div><span class="ytd-bar-val" id="row-val-last">—</span></div>
+              </div>
+              <canvas id="row-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🏋️</span>
+                <div><div class="ytd-title">Strength Workouts — YTD</div><div class="ytd-sub" id="str-sub">—</div></div>
+                <div class="ytd-delta" id="str-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="str-bar-this" style="background:#8B6BAE;"></div></div><span class="ytd-bar-val" id="str-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="str-bar-last" style="background:#D5C8E8;"></div></div><span class="ytd-bar-val" id="str-val-last">—</span></div>
+              </div>
+              <canvas id="str-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div id="garmin-source-note" style="font-size:0.69rem; color:var(--ink-light); text-align:right;"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Strava Activity Tracker Demo -->
+      <div id="demo-strava" style="display:none;">
+        <div class="demo-header">
+          <div class="demo-dot green"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-title">strava-tracker.js · Live API</div>
+        </div>
+        <div class="demo-body" style="padding:18px; gap:12px; display:flex; flex-direction:column; overflow:auto;">
+
+          <div style="background:var(--accent-pale); border:1px solid #C5DDD0; border-radius:10px; padding:13px 16px; font-size:0.81rem; line-height:1.8; color:var(--ink);">
+            <strong style="display:block; margin-bottom:4px; color:var(--accent); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">Live data via Strava API</strong>
+            Activities are fetched automatically using a secure Netlify Function — no login or upload needed.
+            Your Strava credentials are stored as private environment variables on the server and never exposed to the browser.
+          </div>
+
+          <div style="text-align:center; display:flex; flex-direction:column; gap:8px; align-items:center;">
+            <button onclick="loadStravaData()"
+              style="padding:10px 28px; background:var(--accent); color:#fff; border:none;
+                     border-radius:8px; font-size:0.88rem; font-family:var(--sans); cursor:pointer;">
+              🟠 Load my Strava activities
+            </button>
+            <button onclick="useStravaSample()"
+              style="padding:6px 18px; background:transparent; color:var(--ink-light); border:1px solid var(--border);
+                     border-radius:20px; font-size:0.78rem; font-family:var(--sans); cursor:pointer;">
+              Or use sample data →
+            </button>
+          </div>
+
+          <div id="strava-status" style="font-size:0.78rem; color:var(--ink-light); text-align:center; min-height:14px;"></div>
+
+          <div id="strava-charts" style="display:none; flex-direction:column; gap:16px;">
+            <div id="strava-date-banner" style="font-size:0.75rem; color:var(--ink-light); text-align:center;"></div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🚴</span>
+                <div><div class="ytd-title">Miles Biked — YTD</div><div class="ytd-sub" id="sv-bike-sub">—</div></div>
+                <div class="ytd-delta" id="sv-bike-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-bike-bar-this" style="background:var(--accent);"></div></div><span class="ytd-bar-val" id="sv-bike-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-bike-bar-last" style="background:#C5DDD0;"></div></div><span class="ytd-bar-val" id="sv-bike-val-last">—</span></div>
+              </div>
+              <canvas id="sv-bike-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🚣</span>
+                <div><div class="ytd-title">Meters Rowed — YTD</div><div class="ytd-sub" id="sv-row-sub">—</div></div>
+                <div class="ytd-delta" id="sv-row-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-row-bar-this" style="background:#4A90C4;"></div></div><span class="ytd-bar-val" id="sv-row-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-row-bar-last" style="background:#C5D8E8;"></div></div><span class="ytd-bar-val" id="sv-row-val-last">—</span></div>
+              </div>
+              <canvas id="sv-row-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🏋️</span>
+                <div><div class="ytd-title">Strength Workouts — YTD</div><div class="ytd-sub" id="sv-str-sub">—</div></div>
+                <div class="ytd-delta" id="sv-str-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-str-bar-this" style="background:#8B6BAE;"></div></div><span class="ytd-bar-val" id="sv-str-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-str-bar-last" style="background:#D5C8E8;"></div></div><span class="ytd-bar-val" id="sv-str-val-last">—</span></div>
+              </div>
+              <canvas id="sv-str-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div id="strava-source-note" style="font-size:0.69rem; color:var(--ink-light); text-align:right;"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Trip Demo -->
+      <div id="demo-trip" style="display:none;">
+        <div class="demo-header">
+          <div class="demo-dot green"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-title">trip-budget.js</div>
+        </div>
+        <div class="demo-body" style="gap:16px;display:flex;flex-direction:column;justify-content:center;">
+          <p class="demo-intro">🗺️ Cycling trip through Portugal — 10 days</p>
+          <div class="trip-grid">
+            <div class="trip-row">
+              <span class="trip-cat">Flights</span>
+              <div class="trip-bar-bg"><div class="trip-bar" style="width:72%"></div></div>
+              <span class="trip-amt">$720</span>
+            </div>
+            <div class="trip-row">
+              <span class="trip-cat">Hotels</span>
+              <div class="trip-bar-bg"><div class="trip-bar" style="width:60%"></div></div>
+              <span class="trip-amt">$600</span>
+            </div>
+            <div class="trip-row">
+              <span class="trip-cat">Food</span>
+              <div class="trip-bar-bg"><div class="trip-bar" style="width:38%"></div></div>
+              <span class="trip-amt">$380</span>
+            </div>
+            <div class="trip-row">
+              <span class="trip-cat">Bike rental</span>
+              <div class="trip-bar-bg"><div class="trip-bar" style="width:25%"></div></div>
+              <span class="trip-amt">$250</span>
+            </div>
+            <div class="trip-row">
+              <span class="trip-cat">Activities</span>
+              <div class="trip-bar-bg"><div class="trip-bar" style="width:15%"></div></div>
+              <span class="trip-amt">$150</span>
+            </div>
+          </div>
+          <div class="trip-total">
+            <span class="trip-total-lbl">Estimated Total</span>
+            <span class="trip-total-num">$2,100</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Housing / Redfin Demo -->
+      <div id="demo-housing" style="display:none; flex-direction:column; height:100%;">
+        <div class="demo-header">
+          <div class="demo-dot green"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-title">home-prices-05482.js · Redfin Data Center</div>
+        </div>
+        <div class="demo-body" style="padding:18px; gap:12px; display:flex; flex-direction:column; overflow:auto;">
+
+          <!-- Instructions -->
+          <div style="background:var(--accent-pale); border:1px solid #C5DDD0; border-radius:10px; padding:13px 16px; font-size:0.81rem; line-height:1.8; color:var(--ink);">
+            <strong style="display:block; margin-bottom:4px; color:var(--accent); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">How to get the data (free, no account needed)</strong>
+            1. Go to <a href="https://www.redfin.com/news/data-center" target="_blank" style="color:var(--accent); font-weight:500;">redfin.com/news/data-center</a><br>
+            2. Under <em>Monthly Housing Market Data</em>, right-click <strong>Zip Code</strong> → Copy link address<br>
+            3. Paste in browser to download the <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:0.78rem;">.tsv000.gz</code> file, then unzip it<br>
+            4. Drop the <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:0.78rem;">.tsv</code> file below — it will be filtered to ZIP 05482 automatically
+          </div>
+
+          <!-- Upload zone -->
+          <div class="tsv-drop" id="tsv-drop-zone"
+            onclick="document.getElementById('tsv-file-input').click()"
+            ondragover="event.preventDefault(); this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleTSVFile(event.dataTransfer.files[0])">
+            <div style="font-size:1.5rem; margin-bottom:6px;" id="tsv-drop-icon">📂</div>
+            <div style="font-size:0.88rem; font-weight:500; color:var(--ink);">Click or drag &amp; drop the Redfin TSV here</div>
+            <div style="font-size:0.75rem; color:var(--ink-light); margin-top:4px);">e.g. <code style="background:var(--bg);padding:1px 6px;border-radius:3px;">zip_code_market_tracker.tsv</code></div>
+            <input type="file" id="tsv-file-input" accept=".tsv,.tsv000,.txt,.csv" style="display:none" onchange="handleTSVFile(this.files[0])">
+          </div>
+
+          <div id="zillow-status" style="font-size:0.78rem; color:var(--ink-light); text-align:center; min-height:14px;"></div>
+
+          <div style="text-align:center;">
+            <button onclick="useStaticData()"
+              style="padding:6px 18px; background:transparent; color:var(--ink-light); border:1px solid var(--border);
+                     border-radius:20px; font-size:0.78rem; font-family:var(--sans); cursor:pointer;">
+              Or use sample data →
+            </button>
+          </div>
+
+          <!-- Chart (hidden until data loaded) -->
+          <div id="housing-chart-area" style="display:none; flex-direction:column; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+              <div>
+                <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent); font-weight:500;">Shelburne, VT · ZIP 05482</div>
+                <div style="font-family:var(--serif); font-size:1.15rem; margin-top:1px;">Median Sale Price · 24 Months</div>
+              </div>
+              <div style="display:flex; gap:12px; font-size:0.71rem; color:var(--ink-light); align-items:center; flex-wrap:wrap;">
+                <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;opacity:0.85;"></span>Median Sale Price</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:3px;background:#E07B39;border-radius:2px;"></span>Homes Sold</span>
+              </div>
+            </div>
+            <canvas id="housing-chart" style="width:100%;"></canvas>
+            <div id="housing-tooltip" style="display:none;position:fixed;background:var(--ink);color:#fff;padding:9px 13px;border-radius:8px;font-size:0.78rem;pointer-events:none;z-index:999;line-height:1.8;white-space:nowrap;"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px;text-align:center;">
+                <div style="font-family:var(--serif);font-size:1.15rem;" id="hs-latest">—</div>
+                <div style="font-size:0.66rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-light);margin-top:3px;">Latest Median</div>
+              </div>
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px;text-align:center;">
+                <div style="font-family:var(--serif);font-size:1.15rem;" id="hs-change">—</div>
+                <div style="font-size:0.66rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-light);margin-top:3px;">24-Month Change</div>
+              </div>
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px;text-align:center;">
+                <div style="font-family:var(--serif);font-size:1.15rem;" id="hs-avg-sold">—</div>
+                <div style="font-size:0.66rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-light);margin-top:3px;">Avg Homes / Month</div>
+              </div>
+            </div>
+            <div id="housing-source-note" style="font-size:0.69rem; color:var(--ink-light); text-align:right;"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">About</div>
+  <div class="about-grid">
+    <div>
+      <div class="about-avatar fade-in">👤</div>
+    </div>
+    <div class="about-content fade-in">
+      <h2>Hey, I'm David.</h2>
+      <p>I'm an engineer who loves building things that solve real problems in my own life — and sharing them with others who might find them useful.</p>
+      <p>I got into AI-assisted development because it lets me build full projects around ideas I care about, without getting stuck in boilerplate. These tools are my sandbox.</p>
+      <div class="interests">
+        <div class="interest-tag"><span>💰</span> Personal Finance</div>
+        <div class="interest-tag"><span>🚴</span> Cycling</div>
+        <div class="interest-tag"><span>✈️</span> Travel</div>
+        <div class="interest-tag"><span>🤖</span> AI / LLMs</div>
+        <div class="interest-tag"><span>🏔️</span> Outdoors</div>
+      </div>
+      <div class="social-links">
+        <a href="#" class="social-link">GitHub</a>
+        <a href="#" class="social-link">LinkedIn</a>
+        <a href="/cdn-cgi/l/email-protection#3c4553497c59445d514c5059125f5351" class="social-link">Email</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-name">David</span>
+  <span class="footer-note">Built with curiosity & Claude · 2026</span>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Nav scroll effect
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Intersection observer for fade-ins
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Demo switcher
+  function showDemo(id, btn) {
+    ['finance','rides','trip','housing','strava'].forEach(d => {
+      const el = document.getElementById('demo-' + d);
+      if (el) el.style.display = d === id ? (d === 'housing' ? 'flex' : 'block') : 'none';
+    });
+    document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Savings calculator
+  function calcSavings() {
+    const income = parseFloat(document.getElementById('fi-income').value) || 0;
+    const spend  = parseFloat(document.getElementById('fi-spend').value) || 0;
+    const goal   = parseFloat(document.getElementById('fi-goal').value) || 0;
+    const monthly = income - spend;
+    const el = document.getElementById('fi-months');
+    const note = document.getElementById('fi-note');
+    if (monthly <= 0) {
+      el.textContent = '∞';
+      note.textContent = 'Your expenses exceed income — reduce spending first.';
+      return;
+    }
+    const months = Math.ceil(goal / monthly);
+    const years = Math.floor(months / 12);
+    const rem = months % 12;
+    el.textContent = years > 0
+      ? `${years}y ${rem}mo`
+      : `${months} months`;
+    const rate = ((monthly / income) * 100).toFixed(0);
+    note.textContent = `Saving $${monthly.toLocaleString()}/mo (${rate}% of income). You'll hit $${goal.toLocaleString()} in ${months} payments.`;
+  }
+
+  // ── HOUSING: Redfin zip code TSV loader ──────────────────────────────────
+
+  const ZIP = '05482';
+
+  // Sample data — realistic estimates for Shelburne, VT
+  const SAMPLE = [
+    { m:'Mar 23', price:542000, sold:6  }, { m:'Apr 23', price:558000, sold:8  },
+    { m:'May 23', price:575000, sold:11 }, { m:'Jun 23', price:591000, sold:13 },
+    { m:'Jul 23', price:583000, sold:10 }, { m:'Aug 23', price:569000, sold:9  },
+    { m:'Sep 23', price:554000, sold:7  }, { m:'Oct 23', price:548000, sold:6  },
+    { m:'Nov 23', price:537000, sold:5  }, { m:'Dec 23', price:529000, sold:4  },
+    { m:'Jan 24', price:534000, sold:4  }, { m:'Feb 24', price:543000, sold:5  },
+    { m:'Mar 24', price:562000, sold:7  }, { m:'Apr 24', price:578000, sold:9  },
+    { m:'May 24', price:597000, sold:12 }, { m:'Jun 24', price:614000, sold:14 },
+    { m:'Jul 24', price:608000, sold:11 }, { m:'Aug 24', price:595000, sold:10 },
+    { m:'Sep 24', price:582000, sold:8  }, { m:'Oct 24', price:574000, sold:7  },
+    { m:'Nov 24', price:568000, sold:5  }, { m:'Dec 24', price:561000, sold:4  },
+    { m:'Jan 25', price:572000, sold:5  }, { m:'Feb 25', price:589000, sold:6  },
+  ];
+
+  function fmtPrice(v) {
+    if (v == null || isNaN(v)) return '—';
+    return '$' + (v >= 1000000 ? (v/1000000).toFixed(2)+'M' : Math.round(v/1000)+'K');
+  }
+
+  function setStatus(msg, isError) {
+    const el = document.getElementById('zillow-status');
+    el.textContent = msg;
+    el.style.color = isError ? '#c0392b' : '#2E6B4F';
+  }
+
+  function useStaticData() {
+    document.getElementById('housing-source-note').textContent =
+      'Sample estimated data · upload real Redfin TSV for live values · redfin.com/news/data-center';
+    setStatus('Showing sample data.', false);
+    renderChart(SAMPLE, true);
+  }
+
+  // ── Parse the Redfin TSV ──
+  // Format: tab-separated, columns include period_begin, region, median_sale_price, homes_sold
+  // region column contains values like "Zip Code: 05482"
+  function handleTSVFile(file) {
+    if (!file) return;
+    setStatus('⏳ Reading ' + file.name + ' …', false);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target.result;
+        const lines = text.split('\n').filter(l => l.trim());
+        const headers = lines[0].split('\t').map(h => h.trim().replace(/"/g, ''));
+
+        const col = (name) => headers.findIndex(h => h.toLowerCase() === name.toLowerCase());
+        const iRegion   = col('region');
+        const iPeriod   = col('period_begin');
+        const iPrice    = col('median_sale_price');
+        const iSold     = col('homes_sold');
+
+        if (iRegion < 0 || iPeriod < 0 || iPrice < 0) {
+          setStatus('❌ Could not find expected columns. Make sure this is the Redfin zip code market tracker TSV.', true);
+          return;
+        }
+
+        // Filter rows to ZIP 05482
+        const zipRows = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split('\t').map(c => c.trim().replace(/"/g, ''));
+          const region = cols[iRegion] || '';
+          if (region.includes(ZIP)) {
+            const period = cols[iPeriod];
+            const price  = parseFloat(cols[iPrice]);
+            const sold   = parseInt(cols[iSold], 10);
+            if (period && !isNaN(price) && price > 0) {
+              zipRows.push({ period, price: Math.round(price), sold: isNaN(sold) ? 0 : sold });
+            }
+          }
+        }
+
+        if (zipRows.length === 0) {
+          setStatus(`⚠ No data found for ZIP ${ZIP}. Check that this is the zip-level file.`, true);
+          return;
+        }
+
+        // Sort by date, take last 24 months
+        zipRows.sort((a, b) => a.period.localeCompare(b.period));
+        const points = zipRows.slice(-24).map(r => {
+          const d = new Date(r.period + 'T12:00:00');
+          return {
+            m: d.toLocaleString('default', { month:'short', year:'2-digit' }),
+            price: r.price,
+            sold:  r.sold
+          };
+        });
+
+        setStatus(`✓ Loaded ${points.length} months of real Redfin data for ZIP ${ZIP}.`, false);
+        document.getElementById('housing-source-note').textContent =
+          'Source: Redfin Data Center · Monthly Housing Market Data · redfin.com/news/data-center';
+        document.getElementById('tsv-drop-zone').classList.add('loaded');
+        document.getElementById('tsv-drop-icon').textContent = '✅';
+        renderChart(points, false);
+
+      } catch (err) {
+        setStatus('❌ Parse error: ' + err.message, true);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ── Canvas chart: bars for price, line for homes sold ──
+  function renderChart(data, isStatic) {
+    const area = document.getElementById('housing-chart-area');
+    area.style.display = 'flex';
+
+    const canvas = document.getElementById('housing-chart');
+    const dpr = window.devicePixelRatio || 1;
+    const W = Math.max(canvas.parentElement.clientWidth - 4, 280);
+    const H = 240;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.scale(dpr, dpr);
+
+    const n = data.length;
+    const pad = { top:14, right:44, bottom:32, left:60 }; // right pad for sold axis
+    const cw = W - pad.left - pad.right;
+    const ch = H - pad.top - pad.bottom;
+
+    // Price scale (left axis)
+    const prices = data.map(d => d.price);
+    const minP = Math.min(...prices) * 0.93;
+    const maxP = Math.max(...prices) * 1.05;
+    function yp(v) { return pad.top + ch - ((v - minP) / (maxP - minP)) * ch; }
+
+    // Sold scale (right axis)
+    const soldVals = data.map(d => d.sold).filter(v => v > 0);
+    const maxS = soldVals.length ? Math.max(...soldVals) * 1.2 : 20;
+    function ys(v) { return pad.top + ch - (v / maxS) * ch; }
+
+    function xc(i) { return pad.left + (i + 0.5) * (cw / n); }
+    const barW = Math.max((cw / n) * 0.52, 3);
+
+    // Grid lines + left (price) axis labels
+    ctx.setLineDash([3, 4]); ctx.strokeStyle = '#E5E2DA'; ctx.lineWidth = 1;
+    for (let t = 0; t <= 4; t++) {
+      const v = minP + (maxP - minP) * (t / 4);
+      const y = yp(v);
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cw, y); ctx.stroke();
+      ctx.fillStyle = '#6B6860';
+      ctx.font = `500 9px 'DM Sans', system-ui, sans-serif`;
+      ctx.textAlign = 'right';
+      ctx.fillText(fmtPrice(v), pad.left - 5, y + 3.5);
+    }
+    ctx.setLineDash([]);
+
+    // Right axis labels (homes sold)
+    ctx.fillStyle = '#E07B39';
+    ctx.font = `500 8.5px 'DM Sans', system-ui, sans-serif`;
+    ctx.textAlign = 'left';
+    for (let t = 0; t <= 4; t++) {
+      const v = (maxS / 4) * t;
+      const y = ys(v);
+      ctx.fillText(Math.round(v), W - pad.right + 6, y + 3.5);
+    }
+
+    // Price bars
+    const green = '#2E6B4F';
+    data.forEach((d, i) => {
+      const x  = xc(i) - barW / 2;
+      const yt = yp(d.price);
+      const yb = yp(minP);
+      ctx.fillStyle = green + (isStatic ? '77' : 'AA');
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x, yt, barW, yb - yt, [3,3,0,0]);
+      else ctx.rect(x, yt, barW, yb - yt);
+      ctx.fill();
+    });
+
+    // Homes-sold line
+    const orange = '#E07B39';
+    ctx.strokeStyle = orange; ctx.lineWidth = 2;
+    ctx.beginPath();
+    data.forEach((d, i) => {
+      const x = xc(i), y = ys(d.sold);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Dots on sold line
+    data.forEach((d, i) => {
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(xc(i), ys(d.sold), 2.8, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = orange; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(xc(i), ys(d.sold), 2.8, 0, Math.PI*2); ctx.stroke();
+    });
+
+    // X labels every other month
+    ctx.fillStyle = '#6B6860';
+    ctx.font = `400 8.5px 'DM Sans', system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    data.forEach((d, i) => {
+      if (i % 2 === 0) ctx.fillText(d.m, xc(i), H - pad.bottom + 14);
+    });
+
+    // Summary stats
+    const latest = data[data.length - 1];
+    const first  = data[0];
+    const pct    = ((latest.price - first.price) / first.price * 100).toFixed(1);
+    const avgSold = Math.round(data.reduce((s, d) => s + d.sold, 0) / data.length);
+
+    document.getElementById('hs-latest').textContent   = fmtPrice(latest.price);
+    document.getElementById('hs-change').textContent   = (pct > 0 ? '+' : '') + pct + '%';
+    document.getElementById('hs-change').style.color   = pct >= 0 ? '#2E6B4F' : '#c0392b';
+    document.getElementById('hs-avg-sold').textContent = avgSold + ' homes';
+
+    // Tooltip
+    const tooltip = document.getElementById('housing-tooltip');
+    canvas.onmousemove = (e) => {
+      const r = canvas.getBoundingClientRect();
+      const mx = e.clientX - r.left, my = e.clientY - r.top;
+      let found = null, idx = -1;
+      data.forEach((d, i) => { if (Math.abs(mx - xc(i)) < cw/n/2) { found = d; idx = i; } });
+      if (found && my >= pad.top && my <= H - pad.bottom) {
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 14) + 'px';
+        tooltip.style.top  = (e.clientY - 12) + 'px';
+        tooltip.innerHTML  =
+          `<strong>${found.m}</strong><br>` +
+          `Median price: ${fmtPrice(found.price)}<br>` +
+          `Homes sold: ${found.sold}`;
+      } else { tooltip.style.display = 'none'; }
+    };
+    canvas.onmouseleave = () => { tooltip.style.display = 'none'; };
+  }
+
+  // ── GARMIN ACTIVITY TRACKER ───────────────────────────────────────────────
+
+  const BIKE_TYPES     = ['cycling','road cycling','mountain biking','gravel cycling','virtual cycling','indoor cycling','bike'];
+  const ROWING_TYPES   = ['rowing','indoor rowing'];
+  const STRENGTH_TYPES = ['strength training','strength','weight training','gym','functional strength'];
+
+  function classifyActivity(type) {
+    const t = (type || '').toLowerCase().trim();
+    if (BIKE_TYPES.some(k    => t.includes(k))) return 'bike';
+    if (ROWING_TYPES.some(k  => t.includes(k))) return 'row';
+    if (STRENGTH_TYPES.some(k=> t.includes(k))) return 'strength';
+    return null;
+  }
+
+  function buildSampleData() {
+    const now = new Date();
+    const thisYear = now.getFullYear();
+    const lastYear = thisYear - 1;
+    const todayMo = now.getMonth();
+    const todayDay = now.getDate();
+    const activities = [];
+
+    function pushYear(year) {
+      const isThisYear = year === thisYear;
+      for (let mo = 0; mo < 12; mo++) {
+        // For this year, stop at current month/day
+        if (isThisYear && mo > todayMo) break;
+        const daysInMonth = new Date(year, mo + 1, 0).getDate();
+        const maxDay = (isThisYear && mo === todayMo) ? todayDay : daysInMonth;
+        for (let day = 1; day <= maxDay; day++) {
+          const d = new Date(year, mo, day, 12, 0, 0);
+          const bikeChance = (mo >= 3 && mo <= 9) ? 0.43 : 0.14;
+          if (Math.random() < bikeChance)
+            activities.push({ date: d, type: 'bike', value: 15 + Math.random() * 50 });
+          const rowChance = (mo >= 3 && mo <= 9) ? 0.18 : 0.28;
+          if (Math.random() < rowChance)
+            activities.push({ date: d, type: 'row', value: 4000 + Math.random() * 6000 });
+          if (Math.random() < 0.28)
+            activities.push({ date: d, type: 'strength', value: 1 });
+        }
+      }
+    }
+
+    pushYear(lastYear);
+    pushYear(thisYear);
+    return activities;
+  }
+
+  function parseGarminCSV(text) {
+    const lines = text.split('\n').filter(l => l.trim());
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const col = name => headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
+    const iType = col('Activity Type'), iDate = col('Date'), iDist = col('Distance');
+    if (iType < 0 || iDate < 0) return null;
+    const activities = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = []; let cur = '', inQ = false;
+      for (const c of lines[i]) {
+        if (c === '"') { inQ = !inQ; }
+        else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else { cur += c; }
+      }
+      cols.push(cur.trim());
+      const kind = classifyActivity(cols[iType]);
+      if (!kind) continue;
+      const date = new Date((cols[iDate] || '').substring(0, 10) + 'T12:00:00');
+      if (isNaN(date)) continue;
+      const dist = (iDist >= 0 ? parseFloat(cols[iDist]) || 0 : 0);
+      const value = kind === 'row' ? dist * 1000 : dist;
+      activities.push({ date, type: kind, value });
+    }
+    return activities;
+  }
+
+  function computeYTD(activities) {
+    const now = new Date();
+    const thisYear = now.getFullYear();
+    const lastYear = thisYear - 1;
+    // Cut off at today's month+day for both years
+    const cutoffMo  = now.getMonth();
+    const cutoffDay = now.getDate();
+
+    function isBeforeCutoff(d) {
+      const mo = d.getMonth(), day = d.getDate();
+      return mo < cutoffMo || (mo === cutoffMo && day <= cutoffDay);
+    }
+
+    const result  = { bike:{this:0,last:0}, row:{this:0,last:0}, strength:{this:0,last:0} };
+    const monthly = {
+      bike:     { this:Array(12).fill(0), last:Array(12).fill(0) },
+      row:      { this:Array(12).fill(0), last:Array(12).fill(0) },
+      strength: { this:Array(12).fill(0), last:Array(12).fill(0) },
+    };
+    activities.forEach(a => {
+      const yr = a.date.getFullYear(), mo = a.date.getMonth();
+      const val = a.type === 'strength' ? 1 : a.value;
+      if (yr === thisYear && isBeforeCutoff(a.date)) {
+        result[a.type].this += val; monthly[a.type].this[mo] += val;
+      } else if (yr === lastYear) {
+        // Monthly sparkline gets all 12 months of last year
+        monthly[a.type].last[mo] += val;
+        // YTD bar totals only count up to the same cutoff point
+        if (isBeforeCutoff(a.date)) result[a.type].last += val;
+      }
+    });
+    return { result, monthly };
+  }
+
+  function renderGarminCharts(activities) {
+    const { result, monthly } = computeYTD(activities);
+    const now = new Date();
+    document.getElementById('garmin-charts').style.display = 'flex';
+    document.getElementById('garmin-date-banner').textContent =
+      `YTD through ${now.toLocaleString('default',{month:'long',day:'numeric'})}, ${now.getFullYear()}`;
+
+    const metrics = [
+      { key:'bike',     canvasId:'bike-chart', thisColor:'#2E6B4F', lastColor:'#C5DDD0',
+        fmt: v => v.toFixed(1)+' mi',  display: v => v.toFixed(1), unit:'mi',
+        subId:'bike-sub', deltaId:'bike-delta', barThisId:'bike-bar-this', barLastId:'bike-bar-last', valThisId:'bike-val-this', valLastId:'bike-val-last' },
+      { key:'row',      canvasId:'row-chart',  thisColor:'#4A90C4', lastColor:'#C5D8E8',
+        fmt: v => Math.round(v).toLocaleString()+' m', display: v => Math.round(v).toLocaleString(), unit:'m',
+        subId:'row-sub',  deltaId:'row-delta',  barThisId:'row-bar-this',  barLastId:'row-bar-last',  valThisId:'row-val-this',  valLastId:'row-val-last' },
+      { key:'strength', canvasId:'str-chart',  thisColor:'#8B6BAE', lastColor:'#D5C8E8',
+        fmt: v => Math.round(v)+' sessions',   display: v => Math.round(v), unit:'sessions',
+        subId:'str-sub',  deltaId:'str-delta',  barThisId:'str-bar-this',  barLastId:'str-bar-last',  valThisId:'str-val-this',  valLastId:'str-val-last' },
+    ];
+
+    metrics.forEach(m => {
+      const vThis = result[m.key].this, vLast = result[m.key].last;
+      const maxV  = Math.max(vThis, vLast, 1);
+      const pct   = vLast > 0 ? ((vThis - vLast) / vLast * 100).toFixed(0) : '—';
+      document.getElementById(m.subId).textContent =
+        `${m.fmt(vThis)} this year  ·  ${m.fmt(vLast)} last year`;
+      const deltaEl = document.getElementById(m.deltaId);
+      deltaEl.textContent = pct === '—' ? '—' : (pct > 0 ? '+' : '') + pct + '%';
+      deltaEl.style.color = pct >= 0 ? m.thisColor : '#c0392b';
+      setTimeout(() => {
+        document.getElementById(m.barThisId).style.width = (vThis / maxV * 100) + '%';
+        document.getElementById(m.barLastId).style.width = (vLast / maxV * 100) + '%';
+      }, 100);
+      document.getElementById(m.valThisId).textContent = m.display(vThis) + ' ' + m.unit;
+      document.getElementById(m.valLastId).textContent = m.display(vLast) + ' ' + m.unit;
+      drawSparkline(m.canvasId, monthly[m.key].this, monthly[m.key].last, m.thisColor, m.lastColor);
+    });
+  }
+
+  function drawSparkline(canvasId, thisData, lastData, colorThis, colorLast) {
+    const canvas = document.getElementById(canvasId);
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.parentElement.clientWidth - 24, H = 80;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.scale(dpr,dpr);
+
+    const currentMonth = new Date().getMonth();
+    const ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const pad = {top:6, right:16, bottom:16, left:4};
+    const cw = W - pad.left - pad.right, ch = H - pad.top - pad.bottom;
+
+    // Build cumulative series for all 12 months
+    const cumThis = [], cumLast = [];
+    let sT = 0, sL = 0;
+    for (let i = 0; i < 12; i++) {
+      sT += thisData[i];  cumThis.push(sT);
+      sL += lastData[i];  cumLast.push(sL);
+    }
+
+    const maxV = Math.max(...cumThis, ...cumLast, 1);
+    const x = i => pad.left + (i / 11) * cw;
+    const y = v => pad.top + ch - (v / maxV) * ch;
+
+    // Grid line at top
+    ctx.strokeStyle = '#E5E2DA'; ctx.lineWidth = 0.5; ctx.setLineDash([2,3]);
+    ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left+cw, pad.top); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Last year — dashed line, all 12 months
+    ctx.strokeStyle = colorLast; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath();
+    cumLast.forEach((v,i) => i===0 ? ctx.moveTo(x(i),y(v)) : ctx.lineTo(x(i),y(v)));
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // This year — solid line, only up to current month
+    ctx.strokeStyle = colorThis; ctx.lineWidth = 2;
+    ctx.beginPath();
+    cumThis.slice(0, currentMonth + 1).forEach((v,i) => i===0 ? ctx.moveTo(x(i),y(v)) : ctx.lineTo(x(i),y(v)));
+    ctx.stroke();
+
+    // Dot at end of this year's line
+    const lastX = x(currentMonth), lastY = y(cumThis[currentMonth]);
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(lastX, lastY, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = colorThis; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(lastX, lastY, 2.5, 0, Math.PI*2); ctx.stroke();
+
+    // X-axis month labels — all 12
+    ctx.fillStyle = '#6B6860'; ctx.font = `400 7.5px 'DM Sans',system-ui,sans-serif`; ctx.textAlign = 'center';
+    for (let i = 0; i < 12; i++) {
+      ctx.globalAlpha = i <= currentMonth ? 1 : 0.4; // fade future months
+      ctx.fillText(ABBR[i], x(i), H - 2);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function handleGarminCSV(file) {
+    if (!file) return;
+    const st = document.getElementById('garmin-status');
+    st.textContent = '⏳ Reading '+file.name+' …'; st.style.color='var(--ink-light)';
+    const reader = new FileReader();
+    reader.onload = e => {
+      const activities = parseGarminCSV(e.target.result);
+      if (!activities || activities.length === 0) {
+        st.textContent = '❌ Could not find matching activities. Make sure this is a Garmin Connect activities export.';
+        st.style.color = '#c0392b'; return;
+      }
+      st.textContent = `✓ Loaded ${activities.length} matching activities.`;
+      st.style.color = '#2E6B4F';
+      document.getElementById('garmin-drop-zone').style.borderColor = 'var(--accent)';
+      document.getElementById('garmin-drop-zone').style.background  = 'var(--accent-pale)';
+      document.getElementById('garmin-drop-icon').textContent = '✅';
+      document.getElementById('garmin-source-note').textContent = 'Source: Garmin Connect · '+file.name;
+      renderGarminCharts(activities);
+    };
+    reader.readAsText(file);
+  }
+
+  function useGarminSample() {
+    document.getElementById('garmin-status').textContent = 'Showing sample data.';
+    document.getElementById('garmin-status').style.color = 'var(--ink-light)';
+    document.getElementById('garmin-source-note').textContent = 'Sample data — upload your Garmin Connect CSV for real values';
+    renderGarminCharts(buildSampleData());
+  }
+
+  // Run savings calculator on load
+  // ── STRAVA ACTIVITY TRACKER ───────────────────────────────────────────────
+
+  const SV_BIKE_TYPES     = ['ride','virtualride','ebikeride','mountainbikeride','gravelride'];
+  const SV_ROWING_TYPES   = ['rowing'];
+  const SV_STRENGTH_TYPES = ['weighttraining','workout','crossfit'];
+
+  function classifyStrava(type) {
+    const t = (type || '').toLowerCase().replace(/\s/g,'');
+    if (SV_BIKE_TYPES.some(k     => t === k)) return 'bike';
+    if (SV_ROWING_TYPES.some(k   => t === k)) return 'row';
+    if (SV_STRENGTH_TYPES.some(k => t === k)) return 'strength';
+    return null;
+  }
+
+  async function loadStravaData() {
+    const st = document.getElementById('strava-status');
+    st.textContent = '⏳ Fetching from Strava…'; st.style.color = 'var(--ink-light)';
+    try {
+      const res = await fetch('/.netlify/functions/strava-activities');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Function error');
+
+      const activities = data.activities.map(a => ({
+        date:  new Date(a.start_date_local),
+        type:  classifyStrava(a.type),
+        value: classifyStrava(a.type) === 'bike'     ? (a.distance || 0) / 1609.344
+             : classifyStrava(a.type) === 'row'      ? (a.distance || 0)
+             : 1,
+      })).filter(a => a.type);
+
+      if (!activities.length) {
+        st.textContent = '⚠️ No matching activities found.';
+        st.style.color = '#c0392b'; return;
+      }
+      st.textContent = `✓ Loaded ${activities.length} activities from Strava.`;
+      st.style.color = '#2E6B4F';
+      document.getElementById('strava-source-note').textContent = 'Source: Strava API · strava.com/api/v3';
+      renderStravaCharts(activities);
+    } catch (err) {
+      st.textContent = '❌ ' + err.message;
+      st.style.color = '#c0392b';
+    }
+  }
+
+  function useStravaSample() {
+    document.getElementById('strava-status').textContent = 'Showing sample data.';
+    document.getElementById('strava-status').style.color = 'var(--ink-light)';
+    document.getElementById('strava-source-note').textContent = 'Sample data — paste a Strava token above for live values';
+    renderStravaCharts(buildSampleData()); // reuse Garmin sample generator
+  }
+
+  function renderStravaCharts(activities) {
+    const { result, monthly } = computeYTD(activities); // reuse Garmin's computeYTD
+    const now = new Date();
+    document.getElementById('strava-charts').style.display = 'flex';
+    document.getElementById('strava-date-banner').textContent =
+      `YTD through ${now.toLocaleString('default',{month:'long',day:'numeric'})}, ${now.getFullYear()}`;
+
+    const metrics = [
+      { key:'bike',     canvasId:'sv-bike-chart', thisColor:'#2E6B4F', lastColor:'#C5DDD0',
+        fmt: v => v.toFixed(1)+' mi', display: v => v.toFixed(1), unit:'mi',
+        subId:'sv-bike-sub', deltaId:'sv-bike-delta', barThisId:'sv-bike-bar-this', barLastId:'sv-bike-bar-last', valThisId:'sv-bike-val-this', valLastId:'sv-bike-val-last' },
+      { key:'row',      canvasId:'sv-row-chart',  thisColor:'#4A90C4', lastColor:'#C5D8E8',
+        fmt: v => Math.round(v).toLocaleString()+' m', display: v => Math.round(v).toLocaleString(), unit:'m',
+        subId:'sv-row-sub', deltaId:'sv-row-delta', barThisId:'sv-row-bar-this', barLastId:'sv-row-bar-last', valThisId:'sv-row-val-this', valLastId:'sv-row-val-last' },
+      { key:'strength', canvasId:'sv-str-chart',  thisColor:'#8B6BAE', lastColor:'#D5C8E8',
+        fmt: v => Math.round(v)+' sessions', display: v => Math.round(v), unit:'sessions',
+        subId:'sv-str-sub', deltaId:'sv-str-delta', barThisId:'sv-str-bar-this', barLastId:'sv-str-bar-last', valThisId:'sv-str-val-this', valLastId:'sv-str-val-last' },
+    ];
+
+    metrics.forEach(m => {
+      const vThis = result[m.key].this, vLast = result[m.key].last;
+      const maxV  = Math.max(vThis, vLast, 1);
+      const pct   = vLast > 0 ? ((vThis - vLast) / vLast * 100).toFixed(0) : '—';
+      document.getElementById(m.subId).textContent =
+        `${m.fmt(vThis)} this year  ·  ${m.fmt(vLast)} last year`;
+      const deltaEl = document.getElementById(m.deltaId);
+      deltaEl.textContent = pct === '—' ? '—' : (pct > 0 ? '+' : '') + pct + '%';
+      deltaEl.style.color = pct >= 0 ? m.thisColor : '#c0392b';
+      setTimeout(() => {
+        document.getElementById(m.barThisId).style.width = (vThis / maxV * 100) + '%';
+        document.getElementById(m.barLastId).style.width = (vLast / maxV * 100) + '%';
+      }, 100);
+      document.getElementById(m.valThisId).textContent = m.display(vThis) + ' ' + m.unit;
+      document.getElementById(m.valLastId).textContent = m.display(vLast) + ' ' + m.unit;
+      drawSparkline(m.canvasId, monthly[m.key].this, monthly[m.key].last, m.thisColor, m.lastColor);
+    });
+  }
+
+  calcSavings();
+</script>
+</body>
+</html>
