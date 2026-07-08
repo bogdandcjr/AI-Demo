@@ -1,14 +1,13 @@
 // netlify/functions/strava-activities.js
-// Fetches all activities from Strava using a fresh token and returns them.
-// The browser never sees the access token.
-//
-// Query params:
-//   after = unix timestamp (optional, defaults to start of last year)
 
-
-exports.handler = async (event) => {
+export async function handler(event) {
   const { STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN } = process.env;
-  console.log('ENV check:', { hasId: !!STRAVA_CLIENT_ID, hasSecret: !!STRAVA_CLIENT_SECRET, hasRefresh: !!STRAVA_REFRESH_TOKEN });
+
+  console.log('ENV check:', {
+    hasId:      !!STRAVA_CLIENT_ID,
+    hasSecret:  !!STRAVA_CLIENT_SECRET,
+    hasRefresh: !!STRAVA_REFRESH_TOKEN,
+  });
 
   if (!STRAVA_CLIENT_ID || !STRAVA_CLIENT_SECRET || !STRAVA_REFRESH_TOKEN) {
     return {
@@ -31,7 +30,8 @@ exports.handler = async (event) => {
     });
 
     const tokenData = await tokenRes.json();
-    console.log('Token response status:', tokenRes.status, JSON.stringify(tokenData).substring(0, 200));
+    console.log('Token status:', tokenRes.status, JSON.stringify(tokenData).substring(0, 200));
+
     if (!tokenRes.ok) {
       return {
         statusCode: tokenRes.status,
@@ -41,10 +41,9 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Step 2: Fetch activities — default to start of last year
+    // Step 2: Fetch activities from start of last year
     const now = new Date();
-    const defaultAfter = Math.floor(new Date(now.getFullYear() - 1, 0, 1).getTime() / 1000);
-    const after = event.queryStringParameters?.after || defaultAfter;
+    const after = Math.floor(new Date(now.getFullYear() - 1, 0, 1).getTime() / 1000);
 
     const activities = [];
     let page = 1;
@@ -54,6 +53,8 @@ exports.handler = async (event) => {
         `https://www.strava.com/api/v3/athlete/activities?after=${after}&per_page=200&page=${page}`,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
+
+      console.log(`Activities page ${page} status:`, res.status);
 
       if (!res.ok) {
         return {
@@ -65,7 +66,6 @@ exports.handler = async (event) => {
       const batch = await res.json();
       if (!batch.length) break;
 
-      // Only return the fields the frontend needs — keep payload small
       batch.forEach(a => {
         activities.push({
           type:             a.type || a.sport_type,
@@ -78,15 +78,18 @@ exports.handler = async (event) => {
       page++;
     }
 
+    console.log(`Returning ${activities.length} activities`);
+
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ activities }),
     };
   } catch (err) {
+    console.error('Caught error:', err.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message }),
     };
   }
-};
+}
