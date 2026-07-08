@@ -5,8 +5,11 @@
 // Query params:
 //   after = unix timestamp (optional, defaults to start of last year)
 
+const fetch = globalThis.fetch || require('node-fetch');
+
 exports.handler = async (event) => {
   const { STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN } = process.env;
+  console.log('ENV check:', { hasId: !!STRAVA_CLIENT_ID, hasSecret: !!STRAVA_CLIENT_SECRET, hasRefresh: !!STRAVA_REFRESH_TOKEN });
 
   if (!STRAVA_CLIENT_ID || !STRAVA_CLIENT_SECRET || !STRAVA_REFRESH_TOKEN) {
     return {
@@ -29,10 +32,11 @@ exports.handler = async (event) => {
     });
 
     const tokenData = await tokenRes.json();
+    console.log('Token response status:', tokenRes.status, JSON.stringify(tokenData).substring(0, 200));
     if (!tokenRes.ok) {
       return {
         statusCode: tokenRes.status,
-        body: JSON.stringify({ error: tokenData.message || 'Token refresh failed.' }),
+        body: JSON.stringify({ error: tokenData.message || 'Token refresh failed.', details: tokenData }),
       };
     }
 
