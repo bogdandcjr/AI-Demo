@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Strava Activity Tracker — David</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --surface: #FFFFFF;
+      --ink: #1A1916;
+      --ink-light: #6B6860;
+      --accent: #2E6B4F;
+      --accent-pale: #EAF2EC;
+      --border: #E5E2DA;
+      --serif: 'DM Serif Display', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(247,245,240,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-color: var(--border); }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink-light);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 48px 80px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .hero-inner { max-width: 680px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 28px;
+      opacity: 0; animation: fadeUp 0.7s 0.1s ease forwards;
+    }
+    .eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 24px;
+      opacity: 0; animation: fadeUp 0.7s 0.25s ease forwards;
+    }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero p {
+      font-size: 1.15rem; color: var(--ink-light);
+      max-width: 500px; line-height: 1.7; margin-bottom: 40px;
+      font-weight: 300;
+      opacity: 0; animation: fadeUp 0.7s 0.4s ease forwards;
+    }
+    .hero-cta {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.7s 0.55s ease forwards;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 40px;
+      font-size: 0.9rem; font-weight: 500;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: all 0.2s ease;
+    }
+    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-primary:hover { background: #333; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--border); }
+    .btn-outline:hover { border-color: var(--ink); transform: translateY(-1px); }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink-light);
+      margin-bottom: 48px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .section-heading {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      letter-spacing: -0.03em; line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    /* ── PROJECTS GRID ── */
+    #projects { border-top: 1px solid var(--border); }
+
+    .projects-intro { max-width: 520px; margin-bottom: 56px; }
+    .projects-intro p { color: var(--ink-light); font-weight: 300; font-size: 1.05rem; }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      display: flex; flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer; text-decoration: none; color: inherit;
+      position: relative; overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.08);
+    }
+
+    .card-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent);
+      background: var(--accent-pale);
+      padding: 4px 10px; border-radius: 20px;
+      margin-bottom: 20px; width: fit-content;
+    }
+    .card-emoji { font-size: 1rem; }
+
+    .card-title {
+      font-family: var(--serif);
+      font-size: 1.45rem; letter-spacing: -0.02em;
+      margin-bottom: 10px; line-height: 1.2;
+    }
+    .card-desc {
+      font-size: 0.9rem; color: var(--ink-light);
+      line-height: 1.65; flex: 1; font-weight: 300;
+    }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 28px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .card-tech {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .tech-pill {
+      font-size: 0.7rem; font-weight: 500; color: var(--ink-light);
+      background: var(--bg); padding: 3px 8px; border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .card-arrow {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ink-light); font-size: 0.85rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .project-card:hover .card-arrow {
+      background: var(--ink); border-color: var(--ink); color: #fff;
+    }
+
+    .add-card {
+      border: 2px dashed var(--border);
+      background: transparent;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; min-height: 220px;
+      border-radius: var(--radius);
+      color: var(--ink-light);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .add-card:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-pale); }
+    .add-icon { font-size: 1.8rem; }
+    .add-text { font-size: 0.9rem; font-weight: 500; }
+
+    /* ── DEMOS ── */
+    #demos { border-top: 1px solid var(--border); }
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px; align-items: start;
+    }
+    .demo-sidebar { position: sticky; top: 100px; }
+    .demo-sidebar p {
+      color: var(--ink-light); font-weight: 300; font-size: 1.05rem;
+      margin-top: 16px; margin-bottom: 32px;
+    }
+    .demo-list { display: flex; flex-direction: column; gap: 8px; }
+    .demo-btn {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 18px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface);
+      cursor: pointer; text-align: left; width: 100%;
+      transition: all 0.2s; font-family: var(--sans);
+    }
+    .demo-btn:hover, .demo-btn.active {
+      border-color: var(--accent); background: var(--accent-pale);
+    }
+    .demo-btn-emoji { font-size: 1.2rem; width: 24px; text-align: center; }
+    .demo-btn-text { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+    .demo-btn-sub { font-size: 0.78rem; color: var(--ink-light); font-weight: 300; margin-top: 2px; }
+
+    .demo-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-height: 480px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .demo-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .demo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+    .demo-dot.green { background: #5CB85C; }
+    .demo-title { font-size: 0.85rem; font-weight: 500; color: var(--ink-light); margin-left: 4px; }
+    .demo-body { flex: 1; padding: 28px; display: flex; flex-direction: column; }
+
+    /* Finance Demo */
+    .finance-demo { gap: 20px; }
+    .demo-intro { font-size: 0.9rem; color: var(--ink-light); margin-bottom: 8px; }
+    .finance-row { display: flex; gap: 12px; align-items: center; }
+    .finance-label { font-size: 0.85rem; width: 120px; color: var(--ink); font-weight: 500; }
+    .finance-input {
+      flex: 1; padding: 9px 14px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 0.9rem; font-family: var(--sans);
+      background: var(--bg); color: var(--ink);
+      transition: border-color 0.2s;
+    }
+    .finance-input:focus { outline: none; border-color: var(--accent); }
+    .finance-result {
+      background: var(--accent-pale);
+      border: 1px solid #C5DDD0;
+      border-radius: 10px; padding: 20px;
+      margin-top: 8px;
+    }
+    .result-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 500; }
+    .result-value { font-family: var(--serif); font-size: 2.2rem; color: var(--ink); margin-top: 4px; }
+    .result-note { font-size: 0.82rem; color: var(--ink-light); margin-top: 6px; }
+    .demo-run-btn {
+      margin-top: auto; padding: 12px 24px;
+      background: var(--ink); color: #fff;
+      border: none; border-radius: 8px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 500; font-family: var(--sans);
+      transition: background 0.2s; align-self: flex-start;
+    }
+    .demo-run-btn:hover { background: #333; }
+
+    /* Ride Tracker Demo */
+    .rides-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: auto; }
+    .ride-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 16px; background: var(--bg);
+      border-radius: 8px; border: 1px solid var(--border);
+    }
+    .ride-icon { font-size: 1.1rem; }
+    .ride-info { flex: 1; }
+    .ride-name { font-size: 0.9rem; font-weight: 500; }
+    .ride-meta { font-size: 0.78rem; color: var(--ink-light); margin-top: 2px; }
+    .ride-dist { font-family: var(--serif); font-size: 1.2rem; color: var(--accent); }
+    .ride-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px; margin-top: 16px;
+    }
+    .stat-box {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px; text-align: center;
+    }
+    .stat-num { font-family: var(--serif); font-size: 1.5rem; color: var(--ink); }
+    .stat-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-top: 3px; }
+
+    /* Trip Demo */
+    .trip-grid { display: flex; flex-direction: column; gap: 10px; }
+    .trip-row {
+      display: flex; gap: 10px; align-items: center;
+    }
+    .trip-cat { font-size: 0.85rem; font-weight: 500; width: 90px; }
+    .trip-bar-bg { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .trip-bar { height: 100%; border-radius: 4px; background: var(--accent); }
+    .trip-amt { font-size: 0.85rem; color: var(--ink-light); width: 56px; text-align: right; }
+    .trip-total {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px; background: var(--accent-pale);
+      border-radius: 8px; margin-top: 8px;
+    }
+    .trip-total-lbl { font-size: 0.85rem; font-weight: 500; }
+    .trip-total-num { font-family: var(--serif); font-size: 1.4rem; color: var(--accent); }
+
+    /* ── ABOUT ── */
+    #about { border-top: 1px solid var(--border); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 2fr; gap: 80px;
+      align-items: start;
+    }
+    .about-avatar {
+      width: 100%; aspect-ratio: 1;
+      background: var(--accent-pale);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+      border: 1px solid #C5DDD0;
+    }
+    .about-content h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      letter-spacing: -0.03em; margin-bottom: 20px;
+    }
+    .about-content p {
+      color: var(--ink-light); font-weight: 300;
+      font-size: 1.05rem; line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .interests {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px;
+    }
+    .interest-tag {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: 30px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 0.85rem; font-weight: 500;
+    }
+    .interest-tag span { font-size: 1rem; }
+
+    .social-links {
+      display: flex; gap: 12px; margin-top: 28px;
+    }
+    .social-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 30px;
+      border: 1.5px solid var(--border);
+      font-size: 0.85rem; font-weight: 500;
+      text-decoration: none; color: var(--ink);
+      transition: all 0.2s;
+    }
+    .social-link:hover { border-color: var(--ink); background: var(--ink); color: #fff; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .footer-name { font-family: var(--serif); font-size: 1.1rem; }
+    .footer-note { font-size: 0.82rem; color: var(--ink-light); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero, section { padding-left: 24px; padding-right: 24px; }
+      .demo-container { grid-template-columns: 1fr; }
+      .demo-sidebar { position: static; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-avatar { max-width: 140px; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+    .tsv-drop {
+      border: 2px dashed var(--border); border-radius: 10px;
+      padding: 22px 16px; text-align: center; cursor: pointer;
+      transition: all 0.2s; background: var(--surface);
+    }
+    .tsv-drop:hover, .tsv-drop.drag-over { border-color: var(--accent); background: var(--accent-pale); }
+    .tsv-drop.loaded { border-color: var(--accent); border-style: solid; background: var(--accent-pale); }
+
+    /* ── YTD Activity Cards ── */
+    .ytd-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px;
+    }
+    .ytd-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .ytd-emoji { font-size: 1.4rem; flex-shrink: 0; }
+    .ytd-title { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+    .ytd-sub { font-size: 0.75rem; color: var(--ink-light); margin-top: 2px; }
+    .ytd-delta { margin-left: auto; font-family: var(--serif); font-size: 1.2rem; flex-shrink: 0; }
+    .ytd-bar-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .ytd-bar-row { display: flex; align-items: center; gap: 8px; }
+    .ytd-bar-lbl { font-size: 0.72rem; color: var(--ink-light); width: 60px; flex-shrink: 0; }
+    .ytd-bar-bg { flex: 1; height: 10px; background: var(--bg); border-radius: 5px; overflow: hidden; border: 1px solid var(--border); }
+    .ytd-bar-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease; width: 0%; }
+    .ytd-bar-val { font-size: 0.78rem; font-weight: 500; color: var(--ink); width: 64px; text-align: right; flex-shrink: 0; }
+    .ytd-sparkline { width: 100%; height: 80px; display: block; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">David</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="eyebrow-dot"></span> AI Projects Portfolio</div>
+    <h1>Building tools I<br><em>actually</em> want to use.</h1>
+    <p>Engineer & explorer. Live Strava data, pulled automatically — miles biked, meters rowed, and strength sessions, year to date vs. last year.</p>
+    <div class="hero-cta">
+      <a href="#demos" class="btn btn-primary">View Live Demo →</a>
+      <a href="#about" class="btn btn-outline">About me</a>
+    </div>
+  </div>
+</div>
+
+<!-- DEMOS -->
+<section id="demos">
+  <div class="section-label">Live</div>
+  <div class="demo-container" style="grid-template-columns: 1fr;">
+    <div class="demo-panel fade-in" id="demo-panel" style="max-width: 720px; margin: 0 auto; width: 100%;">
+
+      <!-- Strava Activity Tracker -->
+      <div id="demo-strava">
+        <div class="demo-header">
+          <div class="demo-dot green"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-dot"></div>
+          <div class="demo-title">strava-tracker.js · Live API</div>
+        </div>
+        <div class="demo-body" style="padding:18px; gap:12px; display:flex; flex-direction:column; overflow:auto;">
+
+          <div style="background:var(--accent-pale); border:1px solid #C5DDD0; border-radius:10px; padding:13px 16px; font-size:0.81rem; line-height:1.8; color:var(--ink);">
+            <strong style="display:block; margin-bottom:4px; color:var(--accent); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">Live data via Strava API</strong>
+            Activities load automatically using a secure Netlify Function — no login, upload, or button click needed.
+            Credentials are stored as private environment variables on the server and never exposed to the browser.
+          </div>
+
+          <div id="strava-status" style="font-size:0.78rem; color:var(--ink-light); text-align:center; min-height:14px;">⏳ Loading your Strava activities…</div>
+
+          <div id="strava-charts" style="display:none; flex-direction:column; gap:16px;">
+            <div id="strava-date-banner" style="font-size:0.75rem; color:var(--ink-light); text-align:center;"></div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🚴</span>
+                <div><div class="ytd-title">Miles Biked — YTD</div><div class="ytd-sub" id="sv-bike-sub">—</div></div>
+                <div class="ytd-delta" id="sv-bike-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-bike-bar-this" style="background:var(--accent);"></div></div><span class="ytd-bar-val" id="sv-bike-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-bike-bar-last" style="background:#C5DDD0;"></div></div><span class="ytd-bar-val" id="sv-bike-val-last">—</span></div>
+              </div>
+              <canvas id="sv-bike-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🚣</span>
+                <div><div class="ytd-title">Meters Rowed — YTD</div><div class="ytd-sub" id="sv-row-sub">—</div></div>
+                <div class="ytd-delta" id="sv-row-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-row-bar-this" style="background:#4A90C4;"></div></div><span class="ytd-bar-val" id="sv-row-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-row-bar-last" style="background:#C5D8E8;"></div></div><span class="ytd-bar-val" id="sv-row-val-last">—</span></div>
+              </div>
+              <canvas id="sv-row-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div class="ytd-card">
+              <div class="ytd-header">
+                <span class="ytd-emoji">🏋️</span>
+                <div><div class="ytd-title">Strength Workouts — YTD</div><div class="ytd-sub" id="sv-str-sub">—</div></div>
+                <div class="ytd-delta" id="sv-str-delta">—</div>
+              </div>
+              <div class="ytd-bar-wrap">
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">This year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-str-bar-this" style="background:#8B6BAE;"></div></div><span class="ytd-bar-val" id="sv-str-val-this">—</span></div>
+                <div class="ytd-bar-row"><span class="ytd-bar-lbl">Last year</span><div class="ytd-bar-bg"><div class="ytd-bar-fill" id="sv-str-bar-last" style="background:#D5C8E8;"></div></div><span class="ytd-bar-val" id="sv-str-val-last">—</span></div>
+              </div>
+              <canvas id="sv-str-chart" class="ytd-sparkline"></canvas>
+            </div>
+
+            <div id="strava-source-note" style="font-size:0.69rem; color:var(--ink-light); text-align:right;"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">About</div>
+  <div class="about-grid">
+    <div>
+      <div class="about-avatar fade-in">👤</div>
+    </div>
+    <div class="about-content fade-in">
+      <h2>Hey, I'm David.</h2>
+      <p>I'm an engineer who loves building things that solve real problems in my own life — and sharing them with others who might find them useful.</p>
+      <p>I got into AI-assisted development because it lets me build full projects around ideas I care about, without getting stuck in boilerplate. These tools are my sandbox.</p>
+      <div class="interests">
+        <div class="interest-tag"><span>💰</span> Personal Finance</div>
+        <div class="interest-tag"><span>🚴</span> Cycling</div>
+        <div class="interest-tag"><span>✈️</span> Travel</div>
+        <div class="interest-tag"><span>🤖</span> AI / LLMs</div>
+        <div class="interest-tag"><span>🏔️</span> Outdoors</div>
+      </div>
+      <div class="social-links">
+        <a href="#" class="social-link">GitHub</a>
+        <a href="#" class="social-link">LinkedIn</a>
+        <a href="mailto:david@example.com" class="social-link">Email</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-name">David</span>
+  <span class="footer-note">Built with curiosity & Claude · 2026</span>
+</footer>
+
+<script>
+  // Nav scroll effect
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Intersection observer for fade-ins
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // ── ACTIVITY CLASSIFICATION & SAMPLE DATA (shared) ──────────────────────
+
+  const BIKE_TYPES     = ['cycling','road cycling','mountain biking','gravel cycling','virtual cycling','indoor cycling','bike'];
+  const ROWING_TYPES   = ['rowing','indoor rowing'];
+  const STRENGTH_TYPES = ['strength training','strength','weight training','gym','functional strength'];
+
+  function classifyActivity(type) {
+    const t = (type || '').toLowerCase().trim();
+    if (BIKE_TYPES.some(k     => t.includes(k))) return 'bike';
+    if (ROWING_TYPES.some(k   => t.includes(k))) return 'row';
+    if (STRENGTH_TYPES.some(k => t.includes(k))) return 'strength';
+    return null;
+  }
+
+  const SV_BIKE_TYPES     = ['ride','virtualride','ebikeride','mountainbikeride','gravelride'];
+  const SV_ROWING_TYPES   = ['rowing'];
+  const SV_STRENGTH_TYPES = ['weighttraining','workout','crossfit'];
+
+  function classifyStrava(type) {
+    const t = (type || '').toLowerCase().replace(/\s/g,'');
+    if (SV_BIKE_TYPES.some(k     => t === k)) return 'bike';
+    if (SV_ROWING_TYPES.some(k   => t === k)) return 'row';
+    if (SV_STRENGTH_TYPES.some(k => t === k)) return 'strength';
+    return null;
+  }
+
+  function buildSampleData() {
+    const now = new Date();
+    const thisYear = now.getFullYear();
+    const lastYear = thisYear - 1;
+    const todayMo = now.getMonth();
+    const todayDay = now.getDate();
+    const activities = [];
+
+    function pushYear(year) {
+      const isThisYear = year === thisYear;
+      for (let mo = 0; mo < 12; mo++) {
+        if (isThisYear && mo > todayMo) break;
+        const daysInMonth = new Date(year, mo + 1, 0).getDate();
+        const maxDay = (isThisYear && mo === todayMo) ? todayDay : daysInMonth;
+        for (let day = 1; day <= maxDay; day++) {
+          const d = new Date(year, mo, day, 12, 0, 0);
+          const bikeChance = (mo >= 3 && mo <= 9) ? 0.43 : 0.14;
+          if (Math.random() < bikeChance)
+            activities.push({ date: d, type: 'bike', value: 15 + Math.random() * 50 });
+          const rowChance = (mo >= 3 && mo <= 9) ? 0.18 : 0.28;
+          if (Math.random() < rowChance)
+            activities.push({ date: d, type: 'row', value: 4000 + Math.random() * 6000 });
+          if (Math.random() < 0.28)
+            activities.push({ date: d, type: 'strength', value: 1 });
+        }
+      }
+    }
+
+    pushYear(lastYear);
+    pushYear(thisYear);
+    return activities;
+  }
+
+  function computeYTD(activities) {
+    const now = new Date();
+    const thisYear = now.getFullYear();
+    const lastYear = thisYear - 1;
+    // Cut off at today's month+day for both years
+    const cutoffMo  = now.getMonth();
+    const cutoffDay = now.getDate();
+
+    function isBeforeCutoff(d) {
+      const mo = d.getMonth(), day = d.getDate();
+      return mo < cutoffMo || (mo === cutoffMo && day <= cutoffDay);
+    }
+
+    const result  = { bike:{this:0,last:0}, row:{this:0,last:0}, strength:{this:0,last:0} };
+    const monthly = {
+      bike:     { this:Array(12).fill(0), last:Array(12).fill(0) },
+      row:      { this:Array(12).fill(0), last:Array(12).fill(0) },
+      strength: { this:Array(12).fill(0), last:Array(12).fill(0) },
+    };
+    activities.forEach(a => {
+      const yr = a.date.getFullYear(), mo = a.date.getMonth();
+      const val = a.type === 'strength' ? 1 : a.value;
+      if (yr === thisYear && isBeforeCutoff(a.date)) {
+        result[a.type].this += val; monthly[a.type].this[mo] += val;
+      } else if (yr === lastYear) {
+        // Monthly sparkline gets all 12 months of last year
+        monthly[a.type].last[mo] += val;
+        // YTD bar totals only count up to the same cutoff point
+        if (isBeforeCutoff(a.date)) result[a.type].last += val;
+      }
+    });
+    return { result, monthly };
+  }
+
+  function drawSparkline(canvasId, thisData, lastData, colorThis, colorLast) {
+    const canvas = document.getElementById(canvasId);
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.parentElement.clientWidth - 24, H = 80;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.scale(dpr,dpr);
+
+    const currentMonth = new Date().getMonth();
+    const ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const pad = {top:6, right:16, bottom:16, left:4};
+    const cw = W - pad.left - pad.right, ch = H - pad.top - pad.bottom;
+
+    // Build cumulative series for all 12 months
+    const cumThis = [], cumLast = [];
+    let sT = 0, sL = 0;
+    for (let i = 0; i < 12; i++) {
+      sT += thisData[i];  cumThis.push(sT);
+      sL += lastData[i];  cumLast.push(sL);
+    }
+
+    const maxV = Math.max(...cumThis, ...cumLast, 1);
+    const x = i => pad.left + (i / 11) * cw;
+    const y = v => pad.top + ch - (v / maxV) * ch;
+
+    // Grid line at top
+    ctx.strokeStyle = '#E5E2DA'; ctx.lineWidth = 0.5; ctx.setLineDash([2,3]);
+    ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left+cw, pad.top); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Last year — dashed line, all 12 months
+    ctx.strokeStyle = colorLast; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath();
+    cumLast.forEach((v,i) => i===0 ? ctx.moveTo(x(i),y(v)) : ctx.lineTo(x(i),y(v)));
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // This year — solid line, only up to current month
+    ctx.strokeStyle = colorThis; ctx.lineWidth = 2;
+    ctx.beginPath();
+    cumThis.slice(0, currentMonth + 1).forEach((v,i) => i===0 ? ctx.moveTo(x(i),y(v)) : ctx.lineTo(x(i),y(v)));
+    ctx.stroke();
+
+    // Dot at end of this year's line
+    const lastX = x(currentMonth), lastY = y(cumThis[currentMonth]);
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(lastX, lastY, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = colorThis; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(lastX, lastY, 2.5, 0, Math.PI*2); ctx.stroke();
+
+    // X-axis month labels — all 12
+    ctx.fillStyle = '#6B6860'; ctx.font = `400 7.5px 'DM Sans',system-ui,sans-serif`; ctx.textAlign = 'center';
+    for (let i = 0; i < 12; i++) {
+      ctx.globalAlpha = i <= currentMonth ? 1 : 0.4; // fade future months
+      ctx.fillText(ABBR[i], x(i), H - 2);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ── STRAVA ACTIVITY TRACKER ───────────────────────────────────────────────
+
+  async function loadStravaData() {
+    const st = document.getElementById('strava-status');
+    st.textContent = '⏳ Loading your Strava activities…'; st.style.color = 'var(--ink-light)';
+    try {
+      const res = await fetch('/.netlify/functions/strava-activities.js');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Function error');
+
+      const activities = data.activities.map(a => ({
+        date:  new Date(a.start_date_local),
+        type:  classifyStrava(a.type),
+        value: classifyStrava(a.type) === 'bike'     ? (a.distance || 0) / 1609.344
+             : classifyStrava(a.type) === 'row'      ? (a.distance || 0)
+             : 1,
+      })).filter(a => a.type);
+
+      if (!activities.length) {
+        st.textContent = '⚠️ No matching activities found.';
+        st.style.color = '#c0392b'; return;
+      }
+      st.textContent = `✓ Loaded ${activities.length} activities from Strava.`;
+      st.style.color = '#2E6B4F';
+      document.getElementById('strava-source-note').textContent = 'Source: Strava API · strava.com/api/v3';
+      renderStravaCharts(activities);
+    } catch (err) {
+      st.textContent = '❌ ' + err.message + ' — showing sample data instead.';
+      st.style.color = '#c0392b';
+      document.getElementById('strava-source-note').textContent = 'Sample data — live fetch failed';
+      renderStravaCharts(buildSampleData());
+    }
+  }
+
+  function renderStravaCharts(activities) {
+    const { result, monthly } = computeYTD(activities);
+    const now = new Date();
+    document.getElementById('strava-charts').style.display = 'flex';
+    document.getElementById('strava-date-banner').textContent =
+      `YTD through ${now.toLocaleString('default',{month:'long',day:'numeric'})}, ${now.getFullYear()}`;
+
+    const metrics = [
+      { key:'bike',     canvasId:'sv-bike-chart', thisColor:'#2E6B4F', lastColor:'#C5DDD0',
+        fmt: v => v.toFixed(1)+' mi', display: v => v.toFixed(1), unit:'mi',
+        subId:'sv-bike-sub', deltaId:'sv-bike-delta', barThisId:'sv-bike-bar-this', barLastId:'sv-bike-bar-last', valThisId:'sv-bike-val-this', valLastId:'sv-bike-val-last' },
+      { key:'row',      canvasId:'sv-row-chart',  thisColor:'#4A90C4', lastColor:'#C5D8E8',
+        fmt: v => Math.round(v).toLocaleString()+' m', display: v => Math.round(v).toLocaleString(), unit:'m',
+        subId:'sv-row-sub', deltaId:'sv-row-delta', barThisId:'sv-row-bar-this', barLastId:'sv-row-bar-last', valThisId:'sv-row-val-this', valLastId:'sv-row-val-last' },
+      { key:'strength', canvasId:'sv-str-chart',  thisColor:'#8B6BAE', lastColor:'#D5C8E8',
+        fmt: v => Math.round(v)+' sessions', display: v => Math.round(v), unit:'sessions',
+        subId:'sv-str-sub', deltaId:'sv-str-delta', barThisId:'sv-str-bar-this', barLastId:'sv-str-bar-last', valThisId:'sv-str-val-this', valLastId:'sv-str-val-last' },
+    ];
+
+    metrics.forEach(m => {
+      const vThis = result[m.key].this, vLast = result[m.key].last;
+      const maxV  = Math.max(vThis, vLast, 1);
+      const pct   = vLast > 0 ? ((vThis - vLast) / vLast * 100).toFixed(0) : '—';
+      document.getElementById(m.subId).textContent =
+        `${m.fmt(vThis)} this year  ·  ${m.fmt(vLast)} last year`;
+      const deltaEl = document.getElementById(m.deltaId);
+      deltaEl.textContent = pct === '—' ? '—' : (pct > 0 ? '+' : '') + pct + '%';
+      deltaEl.style.color = pct >= 0 ? m.thisColor : '#c0392b';
+      setTimeout(() => {
+        document.getElementById(m.barThisId).style.width = (vThis / maxV * 100) + '%';
+        document.getElementById(m.barLastId).style.width = (vLast / maxV * 100) + '%';
+      }, 100);
+      document.getElementById(m.valThisId).textContent = m.display(vThis) + ' ' + m.unit;
+      document.getElementById(m.valLastId).textContent = m.display(vLast) + ' ' + m.unit;
+      drawSparkline(m.canvasId, monthly[m.key].this, monthly[m.key].last, m.thisColor, m.lastColor);
+    });
+  }
+
+  // Auto-load Strava data as soon as the page loads — no button needed
+  loadStravaData();
+</script>
+</body>
+</html>
