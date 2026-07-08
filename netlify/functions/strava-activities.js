@@ -5,7 +5,6 @@
 // Query params:
 //   after = unix timestamp (optional, defaults to start of last year)
 
-const fetch = globalThis.fetch || require('node-fetch');
 
 exports.handler = async (event) => {
   const { STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN } = process.env;
